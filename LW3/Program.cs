@@ -11,11 +11,11 @@ namespace LW3
 
             var driver = ChromeDriverUtillity.GetChromeWebDriver("https://accounts.ukr.net/");
 
-            //if (!driver.Login("email", "password"))
-            //{
-            //    Console.WriteLine("Test Login failed!");
-            //    driver.Navigate().Refresh();
-            //}
+            if (!driver.Login("email", "password"))
+            {
+                Console.WriteLine("Test Login failed!");
+                driver.Navigate().Refresh();
+            }
 
             if (!driver.Login(email, password))
             {
