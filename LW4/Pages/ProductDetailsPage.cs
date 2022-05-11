@@ -3,6 +3,7 @@ using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace LW4.Pages
@@ -34,6 +35,9 @@ namespace LW4.Pages
 
         [FindsBy(How = How.XPath, Using = ".//p[contains(@class, 'product-prices__big')]")]
         public IWebElement ProductPrice { get; set; }
+
+        [FindsBy(How = How.XPath, Using = ".//p[contains(@class, 'product__code')]")]
+        public IWebElement ProductId { get; set; }
 
         [FindsBy(How = How.XPath, Using = ".//ul[@class='tabs__list']/li")]
         public IList<IWebElement> ProductTabs { get; set; }
@@ -144,6 +148,22 @@ namespace LW4.Pages
             catch
             {
                 return 0;
+            }
+        }
+
+        public string GetProductId()
+        {
+            try
+            {
+                var productIdRegex = new Regex(@"\d+", RegexOptions.Compiled);
+
+                var productIdString = ProductId.Text;
+
+                return productIdRegex.Match(productIdString).Value;
+            }
+            catch
+            {
+                return null;
             }
         }
     }

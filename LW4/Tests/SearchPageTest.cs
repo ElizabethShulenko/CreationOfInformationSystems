@@ -7,7 +7,7 @@ using System.Linq;
 namespace LW4.Tests
 {
     [TestFixture]
-    public class HomePageTests
+    public class SearchPageTests
     {
         private IWebDriver _webDriver;
 
@@ -42,50 +42,52 @@ namespace LW4.Tests
         #endregion
 
         [Test]
-        public void Login_Success()
+        public void SearchProducts()
         {
             //arrange
+            var searchText = "Автоматы";
+
             var homePage = new HomePage(_webDriver);
 
             //act
-            var result = homePage.Login("email@gmail.com", "password");
+            var searchPage = homePage.SearchProducts(searchText);
 
             //assert
-            Assert.IsTrue(result);
+            Assert.AreEqual($"«{searchText}»", searchPage.SearchResult.Text);
+            Assert.NotNull(searchPage);
         }
 
         [Test]
-        public void Login_Failed()
+        public void SearchProductList()
         {
             //arrange
+            var searchText = "Миксеры";
+
             var homePage = new HomePage(_webDriver);
 
             //act
-            var result = homePage.Login("test", "test");
+            var productListPage = homePage.SearchProductList(searchText);
 
             //assert
-            Assert.IsFalse(result);
+            Assert.AreEqual(searchText, productListPage.ProductListName.Text);
+            Assert.NotNull(productListPage);
         }
 
         [Test]
-        public void LoadCategories()
+        public void SearchProduct_Failed()
         {
             //arrange
+            var searchText = "АвтоматыМиксер";
+
             var homePage = new HomePage(_webDriver);
 
-            var categories = homePage.GetCategories();
-            var categoryNodesCount = homePage.CategoryNodes.Count;
-
-            var category = categories.First();
-
             //act
-            var categoryPage = homePage.LoadCategory(category);
-            var categoryPageUri = categoryPage.GetCategoryUri();
+            var productListPage = homePage.SearchProductList(searchText);
+            var searchPage = homePage.SearchProducts(searchText);
 
             //assert
-            Assert.AreEqual(categories.Count(), categoryNodesCount);
-            Assert.AreEqual(category.Uri, categoryPageUri);
-            Assert.NotNull(categoryPage);
+            Assert.IsNull(productListPage);
+            Assert.IsNull(searchPage);
         }
     }
 }

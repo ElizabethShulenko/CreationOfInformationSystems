@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using LW4.Models;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -20,6 +21,12 @@ namespace LW4.Pages
 
         [FindsBy(How = How.XPath, Using = ".//button[contains(@class, 'main-auth__button')]")]
         public IWebElement LoginShowButton { get; set; }
+
+        [FindsBy(How = How.XPath, Using = ".//input[@search-input]")]
+        public IWebElement SearchInput { get; set; }
+
+        [FindsBy(How = How.XPath, Using = ".//button[contains(@class, 'search-form__submit')]")]
+        public IWebElement SearchButton { get; set; }
         #endregion
 
         public HomePage(IWebDriver driver)
@@ -48,6 +55,100 @@ namespace LW4.Pages
             catch
             {
                 return false;
+            }
+        }
+
+        public IEnumerable<Category> GetCategories()
+        {
+            try
+            {
+                var result = new List<Category>();
+
+                foreach (var categoryNode in CategoryNodes)
+                {
+                    result.Add(new Category
+                    {
+                        Name = categoryNode.Text,
+                        Uri = categoryNode.GetAttribute("href")
+                    });
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public CategoryPage LoadCategory(Category category)
+        {
+            try
+            {
+                if (!category.HasUri)
+                {
+                    return null;
+                }
+
+                _webDriver.Navigate().GoToUrl(category.Uri);
+
+                var categoryPage = new CategoryPage(_webDriver);
+
+                return categoryPage;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public SearchPage SearchProducts(string searchText)
+        {
+            try
+            {
+
+                var waiter = new WebDriverWait(_webDriver, TimeSpan.FromSeconds(20));
+
+                var searchPageLocator = By.XPath(".//div[contains(@class, 'search-header')]/h1");
+
+                SearchInput.SendKeys(searchText);
+
+                SearchButton.Click();
+
+                waiter.Until(ExpectedConditions.ElementIsVisible(searchPageLocator));
+
+                var searchPage = new SearchPage(_webDriver);
+
+                return searchPage;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public ProductListPage SearchProductList(string searchText)
+        {
+            try
+            {
+
+                var waiter = new WebDriverWait(_webDriver, TimeSpan.FromSeconds(20));
+
+                var productListPageLocator = By.XPath(".//div[contains(@class,'star-inserted')]/h1");
+
+                SearchInput.SendKeys(searchText);
+
+                SearchButton.Click();
+
+                waiter.Until(ExpectedConditions.ElementIsVisible(productListPageLocator));
+
+                var productListPage = new ProductListPage(_webDriver);
+
+                return productListPage;
+            }
+            catch
+            {
+                return null;
             }
         }
     }
