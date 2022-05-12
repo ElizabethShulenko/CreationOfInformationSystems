@@ -72,7 +72,24 @@ namespace LW4.Tests
         }
 
         [Test]
-        public void LoadProduct()
+        public void LoadProductByIndex()
+        {
+            //arrange
+            var productListPage = new ProductListPage(_webDriver);
+
+            var productsCount = productListPage.ProductNodes.Count;
+            var productIndex = _random.Next(productsCount - 1);
+
+            //act
+            var productDetailsPage = productListPage.LoadProduct(productIndex);
+            var productDetailsPageId = productDetailsPage.GetProductId();
+
+            //assert
+            Assert.NotNull(productDetailsPageId);
+        }
+
+        [Test]
+        public void LoadProductByWebElement()
         {
             //arrange
             var productListPage = new ProductListPage(_webDriver);
@@ -82,20 +99,12 @@ namespace LW4.Tests
 
             //act
             var productNode = productListPage.GetProduct(productIndex);
-            var productDetailsPage1 = productListPage.LoadProduct(productNode);
-            var productDetailsPage1Id = productDetailsPage1.GetProductId();
 
-            var productDetailsPage2 = productListPage.LoadProduct(productIndex);
-            var productDetailsPage2Id = productDetailsPage2.GetProductId();
+            var productDetailsPage = productListPage.LoadProduct(productNode);
+            var productDetailsPageId = productDetailsPage.GetProductId();
 
             //assert
-            Assert.NotNull(productDetailsPage1Id);
-            Assert.NotNull(productDetailsPage2Id);
-
-            Assert.IsNotEmpty(productDetailsPage1Id);
-            Assert.IsNotEmpty(productDetailsPage2Id);
-
-            Assert.AreEqual(productDetailsPage1Id, productDetailsPage2Id);
+            Assert.NotNull(productDetailsPageId);
         }
 
         [Test]
